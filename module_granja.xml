@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_granja" default="compile.module.granja">
+  <dirname property="module.granja.basedir" file="${ant.file.module_granja}"/>
+  
+  <property name="module.jdk.home.granja" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.granja" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.granja" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.granja" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="granja.output.dir" value="${module.granja.basedir}/out/production/Granja"/>
+  <property name="granja.testoutput.dir" value="${module.granja.basedir}/out/test/Granja"/>
+  
+  <path id="granja.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="granja.module.production.classpath">
+    <path refid="${module.jdk.classpath.granja}"/>
+  </path>
+  
+  <path id="granja.runtime.production.module.classpath">
+    <pathelement location="${granja.output.dir}"/>
+  </path>
+  
+  <path id="granja.module.classpath">
+    <path refid="${module.jdk.classpath.granja}"/>
+    <pathelement location="${granja.output.dir}"/>
+  </path>
+  
+  <path id="granja.runtime.module.classpath">
+    <pathelement location="${granja.testoutput.dir}"/>
+    <pathelement location="${granja.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.granja">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.granja">
+    <patternset refid="excluded.from.module.granja"/>
+  </patternset>
+  
+  <path id="granja.module.sourcepath">
+    <dirset dir="${module.granja.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.granja" depends="compile.module.granja.production,compile.module.granja.tests" description="Compile module Granja"/>
+  
+  <target name="compile.module.granja.production" depends="register.custom.compilers" description="Compile module Granja; production classes">
+    <mkdir dir="${granja.output.dir}"/>
+    <javac2 destdir="${granja.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.granja}/javac">
+      <compilerarg line="${compiler.args.granja}"/>
+      <bootclasspath refid="granja.module.bootclasspath"/>
+      <classpath refid="granja.module.production.classpath"/>
+      <src refid="granja.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.granja"/>
+    </javac2>
+    
+    <copy todir="${granja.output.dir}">
+      <fileset dir="${module.granja.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.granja.tests" depends="register.custom.compilers,compile.module.granja.production" description="compile module Granja; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.granja" description="cleanup module">
+    <delete dir="${granja.output.dir}"/>
+    <delete dir="${granja.testoutput.dir}"/>
+  </target>
+</project>
